@@ -10,8 +10,8 @@ namespace WalletClient.Tests
     [TestClass]
     public class SharedTests
     {
-        private const string UserName = "bitcoinrpc";
-        private const string Password = "4CT7htL5YHDsgtRr3SMh6jqFPUfVPzqRdWqdPZvm7TJ3";
+        private const string UserName = "name";
+        private const string Password = "pass";
         private const string Url = "http://127.0.0.1:18332";
 
         private Uri uri;
