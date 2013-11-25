@@ -6,10 +6,10 @@ namespace WalletClient.Shared.Model
     public class TransactionDetail
     {
         [JsonProperty("fee")]
-        public double Fee { get; set; }
+        public decimal Fee { get; set; }
 
         [JsonProperty("amount")]
-        public double Amount { get; set; }
+        public decimal Amount { get; set; }
 
         [JsonProperty("blockindex")]
         public string BlockIndex { get; set; }

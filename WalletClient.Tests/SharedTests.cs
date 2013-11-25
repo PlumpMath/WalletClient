@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -62,7 +63,7 @@ namespace WalletClient.Tests
         [TestMethod]
         public void CanSetTransactionFee()
         {
-            client.SetTransactionFee(0.0002);
+            client.SetTransactionFee(0.0002m);
             var info = client.GetWalletInfo();
             Assert.AreEqual(0.0002, info.Fee);
         }
@@ -77,23 +78,23 @@ namespace WalletClient.Tests
         [TestMethod]
         public void CanGetAccountBalance()
         {
-            double account = client.GetBalance();
+            decimal account = client.GetBalance();
             Console.WriteLine(account);
         }
 
         [TestMethod]
         public void CanGetAccountBalanceForAllAccounts()
         {
-            double account = client.GetBalance();
+            decimal account = client.GetBalance();
             Console.WriteLine(account);
         }
 
         [TestMethod]
         public void CanListAccounts()
         {
-            var accounts = client.GetAccounts(0);
+            var accounts = client.ListAccounts(0);
             Assert.IsNotNull(accounts, "Accounts was null");
-            Assert.IsTrue(accounts.Count > 0, "Accounts returned no items");
+            Assert.IsTrue(accounts.Any(), "Accounts returned no items");
         }
 
         [TestMethod]
@@ -127,7 +128,16 @@ namespace WalletClient.Tests
         [TestMethod]
         public void CanSendCoins()
         {
-            var transactionId = client.SendToAddress("myAdTd18SVnGjx9hVq4n5REvDnPZpR1o6c", 0.1);
+            var transactionId = client.SendToAddress("myAdTd18SVnGjx9hVq4n5REvDnPZpR1o6c", 0.1m);
+            Assert.IsNotNull(transactionId, "TransactionId is null");
+        }
+
+        [TestMethod]
+        public void CanSendMany()
+        {
+            IDictionary<string, decimal> payees = new Dictionary<string, decimal>();
+            payees.Add( "myAdTd18SVnGjx9hVq4n5REvDnPZpR1o6c", 0.1m );
+            var transactionId = client.SendMany("", payees);
             Assert.IsNotNull(transactionId, "TransactionId is null");
         }
 
@@ -158,29 +168,27 @@ namespace WalletClient.Tests
             var newAccount = Guid.NewGuid().ToString();
             var address = client.GetNewAddress(newAccount);
             Assert.IsNotNull(address, "Address is null");
-            var accounts = client.GetAccounts(0);
+            var accounts = client.ListAccounts(0);
             Assert.IsNotNull(accounts.FirstOrDefault(x => x.Name == newAccount), "New account doesn't exist");
         }
 
         [TestMethod]
         public void CanLockWallet()
         {
-            BitcoinError error;
-            client.LockWallet(out error);
+            client.LockWallet();
         }
 
         [TestMethod]
         public void CanEncryptWallet()
         {
-            BitcoinError error;
-            client.EncryptWallet("foo", out error);
+            client.EncryptWallet("foo");
         }
 
         [TestMethod]
         public void CanGetTransactions()
         {
             var transactions = client.ListTransactions();
-            Assert.IsTrue(transactions.Count > 0, "No transactions found");
+            Assert.IsTrue(transactions.Any(), "No transactions found");
         }
 
         [TestMethod]
@@ -197,9 +205,14 @@ namespace WalletClient.Tests
         [TestMethod]
         public void CanSetWalletPassphrase()
         {
-            BitcoinError error;
-            client.SetWalletPassphrase("foo", TimeSpan.FromSeconds(60), out error);
+            client.SetWalletPassphrase("foo2", TimeSpan.FromSeconds(60));
+        }
 
+        [TestMethod]
+        public void CanMoveFunds()
+        {
+            var result = client.Move("myPMSUyNVxouBXU6vxivb3yr145NkxrGNu", "myPMSUyNVxouBXU6vxivb3yr145NkxrGNu", 0.01m);
+            Assert.IsTrue(result);
         }
 
     }

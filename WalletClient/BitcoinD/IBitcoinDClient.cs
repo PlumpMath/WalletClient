@@ -7,7 +7,7 @@ namespace WalletClient.BitcoinD
     public interface IBitcoinDClient : IWalletClient
     {
         WalletInfo GetWalletInfo();
-        void ChangeWalletPassphrase(string oldPassPhrase, string newPassPhrase, out BitcoinError error);
+        void ChangeWalletPassphrase(string oldPassPhrase, string newPassPhrase);
         void Stop();
     }
 }

@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using WalletClient.BlockChainInfo.Model;
 using WalletClient.Infrastructure;
 using WalletClient.Shared;
-using WalletClient.Shared.Model;
 
 namespace WalletClient.BlockChainInfo
 {
@@ -27,8 +25,8 @@ namespace WalletClient.BlockChainInfo
         
         public WalletInfo GetWalletInfo()
         {
-            var response = GetString("getinfo");
-            return Mapper<WalletInfo>.MapFromJson(response);      
+            WalletRequest walletRequest = new WalletRequest("getinfo");
+            return RpcRequest<WalletInfo>(walletRequest);    
         }
     }
 }

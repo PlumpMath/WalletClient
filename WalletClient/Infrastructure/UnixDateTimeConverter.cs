@@ -30,8 +30,8 @@ namespace Newtonsoft.Json.Converters
 
     public class JsonEnumTypeConverter<T> : JsonConverter
     {
-        //adapted from: http://stackoverflow.com/questions/794838/datacontractjsonserializer-and-enums/794962#794962
 
+        //adapted from: http://stackoverflow.com/questions/794838/datacontractjsonserializer-and-enums/794962#794962
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             writer.WriteValue(((T) value).ToString());

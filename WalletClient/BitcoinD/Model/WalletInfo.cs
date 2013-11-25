@@ -19,7 +19,7 @@ namespace WalletClient.BitcoinD.Model
         public int WalletVersion { get; set; }
 
         [JsonProperty("balance")]
-        public double Balance { get; set; }
+        public decimal Balance { get; set; }
 
         [JsonProperty("blocks")]
         public int Blocks { get; set; }
@@ -34,7 +34,7 @@ namespace WalletClient.BitcoinD.Model
         public string Proxy { get; set; }
 
         [JsonProperty("difficulty")]
-        public double Difficulty { get; set; }
+        public decimal Difficulty { get; set; }
 
         [JsonProperty("testnet")]
         public bool TestNet { get; set; }
@@ -46,7 +46,7 @@ namespace WalletClient.BitcoinD.Model
         public int KeyPoolSize { get; set; }
 
         [JsonProperty("paytxfee")]
-        public double Fee { get; set; }
+        public decimal Fee { get; set; }
 
         [JsonProperty("errors")]
         public string Errors { get; set; }

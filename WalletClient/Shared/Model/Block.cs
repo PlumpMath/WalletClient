@@ -37,7 +37,7 @@ namespace WalletClient.Shared.Model
         public string Bits { get; set; }
 
         [JsonProperty("difficulty")]
-        public double Difficulty { get; set; }
+        public decimal Difficulty { get; set; }
 
         [JsonProperty("previousblockhash")]
         public string PreviousBlockHash { get; set; }

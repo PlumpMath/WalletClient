@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using WalletClient.Infrastructure;
 using WalletClient.Shared.Model;
@@ -18,10 +18,8 @@ namespace WalletClient.Shared
         private int id = 0;
         private const string UserAgent = "WalletClient/.NET 0.1";
 
-        protected string GetString(string method, params object[] parameters)
+        protected string MakeRequest(string jsonRequest)
         {
-            id++;
-
             HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(Uri);
             webRequest.Credentials = Credentials;
 
@@ -30,28 +28,7 @@ namespace WalletClient.Shared
             webRequest.UserAgent = UserAgent;
             webRequest.Headers.Add("Authorization", "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Format("{0}:{1}", Credentials.UserName, Credentials.Password))));
 
-            JObject jsonObject = new JObject();
-            jsonObject["jsonrpc"] = "2.0";
-            jsonObject["id"] = id.ToString(CultureInfo.InvariantCulture);
-            jsonObject["method"] = method;
-
-            if (parameters != null && parameters.Length > 0)
-            {
-                JArray props = new JArray();
-                foreach (var p in parameters)
-                {                                 
-                    if (p != null)
-                        props.Add(new JValue(p));
-                }
-                jsonObject.Add(new JProperty("params", props));
-            }
-
-            string s = JsonConvert.SerializeObject(jsonObject);
-            //s = @"{""jsonrpc"":""2.0"",""id"":""1"",""method"":""getbalance"",""params"":[,2]}";
-
-            //s = @"{""jsonrpc"":""2.0"",""id"":""1"",""method"":""getbalance"",""params"":[,1]}";
-            // serialize json for the request
-            byte[] byteArray = Encoding.UTF8.GetBytes(s);
+            byte[] byteArray = Encoding.UTF8.GetBytes(jsonRequest);
             webRequest.ContentLength = byteArray.Length;
 
             using (Stream dataStream = webRequest.GetRequestStream())
@@ -78,7 +55,7 @@ namespace WalletClient.Shared
             }
             catch (WebException ex)
             {
-                using (HttpWebResponse response = (HttpWebResponse) ex.Response)
+                using (HttpWebResponse response = (HttpWebResponse)ex.Response)
                 {
                     using (StreamReader sr = new StreamReader(response.GetResponseStream()))
                     {
@@ -96,86 +73,91 @@ namespace WalletClient.Shared
                 throw;
             }
         }
-     
+
+        protected T RpcRequest<T>(WalletRequest walletRequest)
+        {
+            id++;
+            walletRequest.UpdateId(id);
+            string jsonRequest = JsonConvert.SerializeObject(walletRequest);
+            string result = MakeRequest(jsonRequest);
+            WalletResponse<T> walletResponse = JsonConvert.DeserializeObject<WalletResponse<T>>(result, new UnixDateTimeConverter(), new JsonEnumTypeConverter<TransactionCategory>());
+            
+            if (walletResponse.Error != null)
+            {
+                throw new BitcoinRpcException(walletResponse.Error);
+            }
+            return walletResponse.Result;
+        }
 
         public Transaction GetTransaction(string transactionId)
         {
-            var response = GetString("gettransaction", transactionId);
-            return Mapper<Transaction>.MapFromJson(response);
+            WalletRequest walletRequest = new WalletRequest("gettransaction", new List<object>() { transactionId });
+            return RpcRequest<Transaction>(walletRequest);
         }
 
-        public void SetTransactionFee(double amount)
+        public void SetTransactionFee(decimal amount)
         {
-            var response = GetString("settxfee", Math.Round(amount, 8));
-            Console.WriteLine(response);
+            WalletRequest walletRequest = new WalletRequest("settxfee", new List<object>() { Math.Round(amount, 8) });
+            RpcRequest<string>(walletRequest);
         }
 
         public string GetAccount(string address)
         {
-            var response = GetString("getaccount", address);
-            var account = JObject.Parse(response).SelectToken("result");
-            return account != null ? account.ToString() : null;
+            WalletRequest walletRequest = new WalletRequest("getaccount", new List<object>() { address });
+            return RpcRequest<string>(walletRequest);
         }
 
-        public double GetBalance(string account = "*", int minConfirmations = 1)
+        public decimal GetBalance(string account = "*", int minConfirmations = 1)
         {
-            string response;
-            if (!string.IsNullOrEmpty(account) && minConfirmations != 1)
-            {
-                response = GetString("getbalance", account, minConfirmations);
-            }
-            else if (!string.IsNullOrEmpty(account))
-            {
-                response = GetString("getbalance", account);
-            }
-            else
-            {
-                response = GetString("getbalance");
-            }
+            WalletRequest walletRequest = new WalletRequest("getbalance", new List<object>() { account, minConfirmations });
+            return RpcRequest<decimal>(walletRequest);
 
-            var balance = Mapper<double>.MapFromJson(response);
-            return balance;
         }
 
         public Block GetBlock(string hash)
         {
-            var response = GetString("getblock", hash);
-            var block = Mapper<Block>.MapFromJson(response);
-            return block;
+            WalletRequest walletRequest = new WalletRequest("getblock", new List<object>() { hash });
+            return RpcRequest<Block>(walletRequest);            
         }
 
         public string GetBlockHash(int index)
         {
-            var response = GetString("getblockhash", index);
-            var hash = JObject.Parse(response).SelectToken("result");
-            return hash != null ? hash.ToString() : null;
+            WalletRequest walletRequest = new WalletRequest("getblockcount", new List<object>(){index});
+            return RpcRequest<string>(walletRequest);
         }
 
         public int GetBlockCount()
         {
-            var response = GetString("getblockcount");
-            var blockCount = Mapper<int>.MapFromJson(response);
-            return blockCount;
+            WalletRequest walletRequest = new WalletRequest("getblockcount");
+            return RpcRequest<int>(walletRequest);
         }
 
         public int GetConnectionCount()
         {
-            var response = GetString("getconnectioncount");
-            var connections = Mapper<int>.MapFromJson(response);
-            return connections;
+            WalletRequest walletRequest = new WalletRequest("getconnectioncount");
+            return RpcRequest<int>(walletRequest); 
         }
 
-        public string SendToAddress(string address, double amount, string comment = "", string visibleComment = "")
+        public string SendToAddress(string address, decimal amount, string comment = "", string visibleComment = "")
         {
-            var response = GetString("sendtoaddress", new object[] { address, Math.Round(amount, 8), comment, visibleComment });
-            var transactionId = JObject.Parse(response).SelectToken("result");
-            return transactionId != null ? transactionId.ToString() : null;
+            WalletRequest walletRequest = new WalletRequest("sendtoaddress", new List<object>() { address, Math.Round(amount, 8), comment, visibleComment });
+            return RpcRequest<string>(walletRequest);
         }
 
-        public List<AccountInfo> GetAccounts(int minConfirmations = 1)
+        public string SendMany(string fromAccount, IDictionary<string, decimal> toAccounts, int minConfirmations = 1, string comment = "")
         {
+
+            WalletRequest walletRequest = new WalletRequest("sendmany",
+                                                            new object[] { fromAccount, toAccounts, minConfirmations, comment });
+            return RpcRequest<string>(walletRequest);                                            
+        }
+
+        public IEnumerable<AccountInfo> ListAccounts(int minConfirmations = 1)
+        {
+            WalletRequest walletRequest = new WalletRequest("listaccounts", new List<object>() { minConfirmations });
+            
             List<AccountInfo> accounts = null;
-            var response = GetString("listaccounts", minConfirmations);
+            var response = MakeRequest(walletRequest.ToJsonString());
             var accountObj = JObject.Parse(response).SelectToken("result");
             if (accountObj is JContainer)
             {
@@ -185,7 +167,7 @@ namespace WalletClient.Shared
                 {
                     AccountInfo account = new AccountInfo();
                     account.Name = child.Name;
-                    account.Balance = child.Value.ToObject<double>();
+                    account.Balance = child.Value.ToObject<decimal>();
                     accounts.Add(account);
                 }
             }
@@ -194,46 +176,46 @@ namespace WalletClient.Shared
 
         public string GetNewAddress(string account = "")
         {
-            var response = GetString("getnewaddress", account);
-            var address = JObject.Parse(response).SelectToken("result");
-            return address != null ? address.ToString() : null;
+            WalletRequest walletRequest = new WalletRequest("getnewaddress", new List<object>() { account });
+            return RpcRequest<string>(walletRequest);
         }
 
-        public void LockWallet(out BitcoinError error)
+        public void LockWallet()
         {
-            var response = GetString("walletlock");
-            error = Mapper<BitcoinError>.MapFromJson(response, "error");
+            var response = MakeRequest("walletlock");
             //{"result":null,"error":{"code":-15,"message":"Error: running with an unencrypted wallet, but walletlock was called."},"id":"1"}
             Console.WriteLine(response);
         }
 
-        public void SetWalletPassphrase(string passPhrase, TimeSpan timeSpan, out BitcoinError error)
+        public void SetWalletPassphrase(string passPhrase, TimeSpan timeSpan)
         {
-            var response = GetString("walletpassphrase", new object[] { passPhrase, Convert.ToInt32(timeSpan.TotalSeconds) });
-            //{"result":null,"error":{"code":-15,"message":"Error: running with an unencrypted wallet, but walletpassphrase was called."},"id":"1"}
-            error = Mapper<BitcoinError>.MapFromJson(response, "error");
-            Console.WriteLine(error.Message);
+            WalletRequest walletRequest = new WalletRequest("walletpassphrase", new List<object>() { passPhrase, Convert.ToInt32(timeSpan.TotalSeconds) });
+            RpcRequest<string>(walletRequest);            
         }
 
         public AddressValidation ValidateAddress(string address)
         {
-            var response = GetString("validateaddress", address);
-            return Mapper<AddressValidation>.MapFromJson(response);
+            WalletRequest walletRequest = new WalletRequest("validateaddress", new List<object>() { address });
+            return RpcRequest<AddressValidation>(walletRequest);
         }
 
-        public void EncryptWallet(string passPhrase, out BitcoinError error)
+        public void EncryptWallet(string passPhrase)
         {
-            var response = GetString("encryptwallet", passPhrase);
-            error = Mapper<BitcoinError>.MapFromJson(response, "error");
             //{"result":"wallet encrypted; Bitcoin server stopping, restart to run with encrypted wallet. The keypool has been flushed, you need to make a new backup.","error":null,"id":"1"}
-            Console.WriteLine(response);
+            WalletRequest walletRequest = new WalletRequest("encryptwallet", new List<object>() { passPhrase });
+            RpcRequest<AddressValidation>(walletRequest);
         }
 
-        public List<WalletTransaction> ListTransactions(string account = "*", int count = 10, int startingIndex = 0)
+        public IEnumerable<WalletTransaction> ListTransactions(string account = "*", int count = 10, int startingIndex = 0)
         {
-            var response = GetString("listtransactions", new object[] { account, count, startingIndex });
-            var transactions = Mapper<WalletTransaction>.MapCollectionFromJson(response);
-            return transactions;
+            WalletRequest walletRequest = new WalletRequest("listtransactions", new List<object>() { account, count, startingIndex });
+            return RpcRequest<IEnumerable<WalletTransaction>>(walletRequest);  
+        }
+
+        public bool Move(string fromAddress, string toAddress, decimal amount, int minConfirmations = 1, string comment = "")
+        {
+            WalletRequest walletRequest = new WalletRequest("move", new List<object>() { fromAddress, toAddress, Math.Round(amount, 8), minConfirmations, comment });
+            return RpcRequest<bool>(walletRequest);  
         }
     }
 }

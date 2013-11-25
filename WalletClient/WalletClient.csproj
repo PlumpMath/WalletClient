@@ -47,14 +47,16 @@
     <Compile Include="BitcoinD\IBitcoinDClient.cs" />
     <Compile Include="BlockChainInfo\BlockChainInfoClient.cs" />
     <Compile Include="BlockChainInfo\IBlockChainInfoClient.cs" />
+    <Compile Include="Infrastructure\BitcoinRpcException.cs" />
     <Compile Include="Infrastructure\UnixDateTimeConverter.cs" />
+    <Compile Include="Infrastructure\WalletRequest.cs" />
+    <Compile Include="Infrastructure\WalletResponse.cs" />
     <Compile Include="Shared\BaseClient.cs" />
     <Compile Include="Shared\IWalletClient.cs" />
     <Compile Include="Shared\Model\AccountInfo.cs" />
     <Compile Include="BitcoinD\Model\WalletInfo.cs" />
     <Compile Include="BlockChainInfo\Model\WalletInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Infrastructure\Mapper.cs" />
     <Compile Include="Shared\Model\AddressValidation.cs" />
     <Compile Include="Shared\Model\BitcoinError.cs" />
     <Compile Include="Shared\Model\Block.cs" />

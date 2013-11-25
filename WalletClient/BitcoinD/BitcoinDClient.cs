@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using WalletClient.BitcoinD.Model;
 using WalletClient.Infrastructure;
 using WalletClient.Shared;
-using WalletClient.Shared.Model;
 
 namespace WalletClient.BitcoinD
 {
@@ -25,23 +25,22 @@ namespace WalletClient.BitcoinD
         
         public WalletInfo GetWalletInfo()
         {
-            var response = GetString("getinfo");
-            return Mapper<WalletInfo>.MapFromJson(response);      
+            WalletRequest walletRequest = new WalletRequest("getinfo");
+            return RpcRequest<WalletInfo>(walletRequest);        
         }
 
         public void Stop()
         {
-            var response = GetString("stop");
+            WalletRequest walletRequest = new WalletRequest("stop");
+            RpcRequest<string>(walletRequest);
             //{"result":"Bitcoin server stopping","error":null,"id":"1"}
         }
 
-        public void ChangeWalletPassphrase(string oldPassPhrase, string newPassPhrase, out BitcoinError error)
+        public void ChangeWalletPassphrase(string oldPassPhrase, string newPassPhrase)
         {
-            var response = GetString("walletpassphrasechange", new object[] { oldPassPhrase, newPassPhrase });
-            error = Mapper<BitcoinError>.MapFromJson(response, "error");
+            WalletRequest walletRequest = new WalletRequest("walletpassphrasechange", new List<object>() { oldPassPhrase, newPassPhrase });
+            RpcRequest<string>(walletRequest);
             //{"result":null,"error":{"code":-14,"message":"Error: The wallet passphrase entered was incorrect."},"id":"1"}
-            Console.WriteLine(response);
-        }
-        
+        }        
     }
 }

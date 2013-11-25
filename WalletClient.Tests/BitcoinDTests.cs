@@ -70,8 +70,7 @@ namespace WalletClient.Tests
         [TestMethod]
         public void CanChangeWalletPassphrase()
         {
-            BitcoinError error;
-            client.ChangeWalletPassphrase("foo", "foo2", out error);
+            client.ChangeWalletPassphrase("foo", "foo2");
         }
         
     }
