@@ -2,8 +2,7 @@
 using System.Linq;
 using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WalletClient.BitcoinD;
-using WalletClient.Shared.Model;
+using WalletClient.Bitcoind;
 
 namespace WalletClient.Tests
 {
@@ -16,7 +15,7 @@ namespace WalletClient.Tests
 
         private Uri uri;
         private NetworkCredential credential;
-        private BitcoinDClient client;
+        private BitcoindClient client;
 
         /// <summary>
         ///Gets or sets the test context which provides
@@ -42,7 +41,7 @@ namespace WalletClient.Tests
         {
             uri = new Uri(Url);
             credential = new NetworkCredential(UserName, Password);
-            client = new BitcoinDClient(uri, credential);
+            client = new BitcoindClient(uri, credential);
         }
         //
         // Use TestCleanup to run code after each test has run

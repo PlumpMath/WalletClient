@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WalletClient.BitcoinD;
+using WalletClient.Bitcoind;
+using WalletClient.Infrastructure;
 using WalletClient.Shared.Model;
 
 namespace WalletClient.Tests
@@ -11,13 +12,13 @@ namespace WalletClient.Tests
     [TestClass]
     public class SharedTests
     {
-        private const string UserName = "name";
+        private const string UserName = "user";
         private const string Password = "pass";
         private const string Url = "http://127.0.0.1:18332";
 
         private Uri uri;
         private NetworkCredential credential;
-        private BitcoinDClient client;
+        private BitcoindClient client;
 
         /// <summary>
         ///Gets or sets the test context which provides
@@ -43,7 +44,7 @@ namespace WalletClient.Tests
         {
             uri = new Uri(Url);
             credential = new NetworkCredential(UserName, Password);
-            client = new BitcoinDClient(uri, credential);
+            client = new BitcoindClient(uri, credential);
         }
         //
         // Use TestCleanup to run code after each test has run
@@ -56,7 +57,17 @@ namespace WalletClient.Tests
         [TestMethod]
         public void CanGetTransaction()
         {
-            var transaction = client.GetTransaction("366a85cfd395da9b85ce59092dffdd0fa9db105b7dfe1d97802e8a3d9729eedc");
+            Transaction transaction = null;
+            try
+            {
+                transaction = client.GetTransaction("092fe4f122a75c3da4bc07ea701baa121a860a670c8e17d79b130e4ebc41b3cc");
+            }
+            catch (BitcoinRpcException ex)
+            {
+                Console.WriteLine(ex.Message);
+                
+            }
+            
             Assert.IsNotNull(transaction, "Transaction is null");
         }
 
@@ -213,6 +224,37 @@ namespace WalletClient.Tests
         {
             var result = client.Move("myPMSUyNVxouBXU6vxivb3yr145NkxrGNu", "myPMSUyNVxouBXU6vxivb3yr145NkxrGNu", 0.01m);
             Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        public void CanGetRawTransactionHex()
+        {
+            var result = client.GetRawTransactionHex("092fe4f122a75c3da4bc07ea701baa121a860a670c8e17d79b130e4ebc41b3cc");
+            Assert.IsNotNull(result);
+        }
+        
+        [TestMethod]
+        public void CanGetRawTransaction()
+        {
+            var result = client.GetRawTransaction("092fe4f122a75c3da4bc07ea701baa121a860a670c8e17d79b130e4ebc41b3cc");
+            Console.WriteLine(result.ToJsonString());
+            Assert.IsNotNull(result);
+        }
+
+        [TestMethod]
+        public void CanDecodeRawTransactionHex()
+        {
+            var result = client.GetRawTransactionHex("092fe4f122a75c3da4bc07ea701baa121a860a670c8e17d79b130e4ebc41b3cc");
+            Assert.IsNotNull(result);
+            var rawTransaction = client.DecodeRawTransaction(result);
+            Assert.IsNotNull(rawTransaction);
+        }
+
+        [TestMethod]
+        public void CanListUnspent()
+        {
+            var result = client.ListUnspentTransactions();
+            Assert.IsNotNull(result);
         }
 
     }

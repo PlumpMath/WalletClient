@@ -1,12 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using WalletClient.Shared.Model;
+using WalletClient.Shared.Model.RawTransactions;
 
 namespace WalletClient.Shared
 {
     public interface IWalletClient
     {
+        string AddMultiSigAddress(int required, IEnumerable<string> keys, string account);
+        void AddNode(string node, AddNodeAction action);
+        string CreateRawTransaction(IEnumerable<object> inputs, IDictionary<string, decimal> outputs);
+        RawTransaction DecodeRawTransaction(string transactionHex);
+        RawTransactionInfo GetRawTransaction(string transactionId);
+        string GetRawTransactionHex(string transactionId);
         Transaction GetTransaction(string transactionId);
+        List<UnspentTransaction> ListUnspentTransactions(int minConfirmations, int maxConfirmations);
         void SetTransactionFee(decimal amount);
         string GetAccount(string address);
         decimal GetBalance(string account, int minConfirmations);

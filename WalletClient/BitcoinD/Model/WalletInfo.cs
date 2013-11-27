@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-namespace WalletClient.BitcoinD.Model
+namespace WalletClient.Bitcoind.Model
 {
     public class WalletInfo
     {

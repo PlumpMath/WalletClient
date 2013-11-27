@@ -1,28 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using WalletClient.BitcoinD.Model;
+using WalletClient.Bitcoind.Model;
 using WalletClient.Infrastructure;
 using WalletClient.Shared;
 
-namespace WalletClient.BitcoinD
+namespace WalletClient.Bitcoind
 {
-    public class BitcoinDClient : BaseClient, IBitcoinDClient
+    public class BitcoindClient : BaseClient, IBitcoindClient
     {
-        public BitcoinDClient(){}
+        public BitcoindClient(){}
 
-        public BitcoinDClient(Uri uri)
+        public BitcoindClient(Uri uri)
         {
             Uri = uri;
         }
 
-        public BitcoinDClient(Uri uri, NetworkCredential credentials)
+        public BitcoindClient(Uri uri, NetworkCredential credentials)
         {
             Uri = uri;
             Credentials = credentials;
         }
 
-        
+
+        public void BackupWallet(string destination)
+        {
+            WalletRequest walletRequest = new WalletRequest("backupwallet", new List<object>(){destination});
+            RpcRequest<string>(walletRequest);
+        }
+
         public WalletInfo GetWalletInfo()
         {
             WalletRequest walletRequest = new WalletRequest("getinfo");

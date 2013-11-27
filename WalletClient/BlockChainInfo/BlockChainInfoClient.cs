@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using WalletClient.BlockChainInfo.Model;
 using WalletClient.Infrastructure;
@@ -22,7 +23,13 @@ namespace WalletClient.BlockChainInfo
             Credentials = credentials;
         }
 
-        
+
+        public void BackupWallet()
+        {
+            WalletRequest walletRequest = new WalletRequest("backupwallet");
+            RpcRequest<string>(walletRequest);
+        }
+
         public WalletInfo GetWalletInfo()
         {
             WalletRequest walletRequest = new WalletRequest("getinfo");

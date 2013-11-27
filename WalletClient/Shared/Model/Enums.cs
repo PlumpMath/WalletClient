@@ -8,4 +8,11 @@ namespace WalletClient.Shared.Model
         Send,
         Receive
     }
+
+    public enum AddNodeAction
+    {
+        Add,
+        Remove,
+        OneTry
+    }
 }

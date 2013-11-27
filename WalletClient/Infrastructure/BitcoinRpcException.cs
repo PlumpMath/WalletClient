@@ -3,7 +3,7 @@ using WalletClient.Shared.Model;
 
 namespace WalletClient.Infrastructure
 {
-    class BitcoinRpcException : Exception
+    public class BitcoinRpcException : Exception
     {
         public BitcoinError Error {get; private set;}
 

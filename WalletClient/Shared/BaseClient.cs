@@ -8,10 +8,11 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using WalletClient.Infrastructure;
 using WalletClient.Shared.Model;
+using WalletClient.Shared.Model.RawTransactions;
 
 namespace WalletClient.Shared
 {
-    public class BaseClient : IWalletClient
+    public abstract class BaseClient : IWalletClient
     {
         public Uri Uri;
         public NetworkCredential Credentials;
@@ -89,10 +90,51 @@ namespace WalletClient.Shared
             return walletResponse.Result;
         }
 
+        public string AddMultiSigAddress(int required, IEnumerable<string> keys, string account = "")
+        {
+            WalletRequest walletRequest = new WalletRequest("addmultisigaddress", new List<object>() { required, keys, account });
+            return RpcRequest<string>(walletRequest);
+        }
+
+        public void AddNode(string node, AddNodeAction action)
+        {
+            WalletRequest walletRequest = new WalletRequest("addnode", new List<object>() { node, action.ToString().ToLowerInvariant() });
+            RpcRequest<object>(walletRequest);
+        }
+
+        public string CreateRawTransaction(IEnumerable<object> inputs, IDictionary<string, decimal> outputs)
+        {
+            throw new NotImplementedException();
+        }
+
+        public RawTransaction DecodeRawTransaction(string transactionHex)
+        {
+            WalletRequest walletRequest = new WalletRequest("decoderawtransaction", new List<object>() { transactionHex });
+            return RpcRequest<RawTransaction>(walletRequest);
+        }
+
+        public RawTransactionInfo GetRawTransaction(string transactionId)
+        {
+            WalletRequest walletRequest = new WalletRequest("getrawtransaction", new List<object>() { transactionId, 1 });
+            return RpcRequest<RawTransactionInfo>(walletRequest);
+        }
+
+        public string GetRawTransactionHex(string transactionId)
+        {
+            WalletRequest walletRequest = new WalletRequest("getrawtransaction", new List<object>() { transactionId, 0 });
+            return RpcRequest<string>(walletRequest);
+        }
+
         public Transaction GetTransaction(string transactionId)
         {
             WalletRequest walletRequest = new WalletRequest("gettransaction", new List<object>() { transactionId });
             return RpcRequest<Transaction>(walletRequest);
+        }
+
+        public List<UnspentTransaction> ListUnspentTransactions(int minConfirmations = 1, int maxConfirmations = 999999)
+        {
+            WalletRequest walletRequest = new WalletRequest("listunspent", new List<object>() { minConfirmations, maxConfirmations });
+            return RpcRequest<List<UnspentTransaction>>(walletRequest);
         }
 
         public void SetTransactionFee(decimal amount)
