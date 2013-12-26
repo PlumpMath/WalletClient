@@ -56,5 +56,6 @@ namespace WalletClient.Tests
             var info = client.GetWalletInfo();
             Assert.IsNotNull(info, "Wallet info is null");
         }
+        
     }
 }

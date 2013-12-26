@@ -22,7 +22,7 @@ namespace Newtonsoft.Json.Converters
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            long ticks = (long)reader.Value;
+            long ticks = Convert.ToInt64(reader.Value);
             return initialTime.AddSeconds(ticks);
         }
         

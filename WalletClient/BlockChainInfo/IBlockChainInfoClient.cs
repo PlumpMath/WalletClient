@@ -14,6 +14,6 @@ namespace WalletClient.BlockChainInfo
         /// Gets summary information about your wallet and the Bitcoin system
         /// </summary>
         /// <returns>A populated <see cref="WalletInfo"/> class.</returns>
-        WalletInfo GetWalletInfo();        
+        WalletInfo GetWalletInfo();
     }
 }

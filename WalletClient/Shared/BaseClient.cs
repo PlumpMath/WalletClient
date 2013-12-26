@@ -102,29 +102,6 @@ namespace WalletClient.Shared
             RpcRequest<object>(walletRequest);
         }
 
-        public string CreateRawTransaction(IEnumerable<object> inputs, IDictionary<string, decimal> outputs)
-        {
-            throw new NotImplementedException();
-        }
-
-        public RawTransaction DecodeRawTransaction(string transactionHex)
-        {
-            WalletRequest walletRequest = new WalletRequest("decoderawtransaction", new List<object>() { transactionHex });
-            return RpcRequest<RawTransaction>(walletRequest);
-        }
-
-        public RawTransactionInfo GetRawTransaction(string transactionId)
-        {
-            WalletRequest walletRequest = new WalletRequest("getrawtransaction", new List<object>() { transactionId, 1 });
-            return RpcRequest<RawTransactionInfo>(walletRequest);
-        }
-
-        public string GetRawTransactionHex(string transactionId)
-        {
-            WalletRequest walletRequest = new WalletRequest("getrawtransaction", new List<object>() { transactionId, 0 });
-            return RpcRequest<string>(walletRequest);
-        }
-
         public Transaction GetTransaction(string transactionId)
         {
             WalletRequest walletRequest = new WalletRequest("gettransaction", new List<object>() { transactionId });

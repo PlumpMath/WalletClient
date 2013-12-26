@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using WalletClient.BlockChainInfo.Model;
 using WalletClient.Infrastructure;
@@ -9,7 +8,6 @@ namespace WalletClient.BlockChainInfo
 {
     public class BlockChainInfoClient : BaseClient, IBlockChainInfoClient
     {
-        
         public BlockChainInfoClient(){}
 
         public BlockChainInfoClient(Uri uri)

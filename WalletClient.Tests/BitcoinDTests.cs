@@ -71,6 +71,30 @@ namespace WalletClient.Tests
         {
             client.ChangeWalletPassphrase("foo", "foo2");
         }
+
+        [TestMethod]
+        public void CanGetRawTransactionHex()
+        {
+            var result = client.GetRawTransactionHex("092fe4f122a75c3da4bc07ea701baa121a860a670c8e17d79b130e4ebc41b3cc");
+            Assert.IsNotNull(result);
+        }
+
+        [TestMethod]
+        public void CanGetRawTransaction()
+        {
+            var result = client.GetRawTransaction("13dffdaef097881acfe9bdb5e6338192242d80161ffec264ee61cf23bc9a1164");
+            Console.WriteLine(result.ToJsonString());
+            Assert.IsNotNull(result);
+        }
+
+        [TestMethod]
+        public void CanDecodeRawTransactionHex()
+        {
+            var result = client.GetRawTransactionHex("092fe4f122a75c3da4bc07ea701baa121a860a670c8e17d79b130e4ebc41b3cc");
+            Assert.IsNotNull(result);
+            var rawTransaction = client.DecodeRawTransaction(result);
+            Assert.IsNotNull(rawTransaction);
+        }
         
     }
 }

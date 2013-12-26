@@ -4,6 +4,7 @@ using System.Net;
 using WalletClient.Bitcoind.Model;
 using WalletClient.Infrastructure;
 using WalletClient.Shared;
+using WalletClient.Shared.Model.RawTransactions;
 
 namespace WalletClient.Bitcoind
 {
@@ -47,6 +48,30 @@ namespace WalletClient.Bitcoind
             WalletRequest walletRequest = new WalletRequest("walletpassphrasechange", new List<object>() { oldPassPhrase, newPassPhrase });
             RpcRequest<string>(walletRequest);
             //{"result":null,"error":{"code":-14,"message":"Error: The wallet passphrase entered was incorrect."},"id":"1"}
-        }        
+        }
+
+
+        public string CreateRawTransaction(IEnumerable<object> inputs, IDictionary<string, decimal> outputs)
+        {
+            throw new NotImplementedException();
+        }
+
+        public RawTransaction DecodeRawTransaction(string transactionHex)
+        {
+            WalletRequest walletRequest = new WalletRequest("decoderawtransaction", new List<object>() { transactionHex });
+            return RpcRequest<RawTransaction>(walletRequest);
+        }
+
+        public RawTransactionInfo GetRawTransaction(string transactionId)
+        {
+            WalletRequest walletRequest = new WalletRequest("getrawtransaction", new List<object>() { transactionId, 1 });
+            return RpcRequest<RawTransactionInfo>(walletRequest);
+        }
+
+        public string GetRawTransactionHex(string transactionId)
+        {
+            WalletRequest walletRequest = new WalletRequest("getrawtransaction", new List<object>() { transactionId, 0 });
+            return RpcRequest<string>(walletRequest);
+        }
     }
 }
