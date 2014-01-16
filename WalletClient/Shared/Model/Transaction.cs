@@ -31,7 +31,7 @@ namespace WalletClient.Shared.Model
         public string BlockHash { get; set; }
 
         [JsonProperty("details")]
-        List<TransactionDetail> TransactionDetails { get; set; }
+        public List<TransactionDetail> TransactionDetails { get; set; }
         
         public Transaction()
         {
