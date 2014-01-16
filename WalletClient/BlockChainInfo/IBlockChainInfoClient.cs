@@ -1,4 +1,5 @@
-﻿using WalletClient.BlockChainInfo.Model;
+﻿using System.Threading.Tasks;
+using WalletClient.BlockChainInfo.Model;
 using WalletClient.Shared;
 
 namespace WalletClient.BlockChainInfo
@@ -10,10 +11,14 @@ namespace WalletClient.BlockChainInfo
         /// </summary>
         void BackupWallet();
 
+        Task BackupWalletAsync();
+
         /// <summary>
         /// Gets summary information about your wallet and the Bitcoin system
         /// </summary>
         /// <returns>A populated <see cref="WalletInfo"/> class.</returns>
         WalletInfo GetWalletInfo();
+
+        Task<WalletInfo> GetWalletInfoAsync();
     }
 }

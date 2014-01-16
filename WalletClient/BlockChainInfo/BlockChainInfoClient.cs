@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Threading.Tasks;
 using WalletClient.BlockChainInfo.Model;
 using WalletClient.Infrastructure;
 using WalletClient.Shared;
@@ -28,10 +29,22 @@ namespace WalletClient.BlockChainInfo
             RpcRequest<string>(walletRequest);
         }
 
+        async public Task BackupWalletAsync()
+        {
+            WalletRequest walletRequest = new WalletRequest("backupwallet");
+            await RpcRequestAsync<string>(walletRequest);
+        }
+
         public WalletInfo GetWalletInfo()
         {
             WalletRequest walletRequest = new WalletRequest("getinfo");
             return RpcRequest<WalletInfo>(walletRequest);    
+        }
+
+        async public Task<WalletInfo> GetWalletInfoAsync()
+        {
+            WalletRequest walletRequest = new WalletRequest("getinfo");
+            return await RpcRequestAsync<WalletInfo>(walletRequest);
         }
     }
 }
