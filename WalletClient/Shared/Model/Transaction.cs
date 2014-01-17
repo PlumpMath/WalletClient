@@ -30,8 +30,17 @@ namespace WalletClient.Shared.Model
         [JsonProperty("blockhash")]
         public string BlockHash { get; set; }
 
+        [JsonProperty("blocktime")]
+        public DateTime BlockTime { get; set; }
+
         [JsonProperty("details")]
         public List<TransactionDetail> TransactionDetails { get; set; }
+        
+        [JsonProperty("time")]
+        public DateTime Time { get; set; }
+        
+        [JsonProperty("timereceived")]
+        public DateTime TimeReceived { get; set; }
         
         public Transaction()
         {
