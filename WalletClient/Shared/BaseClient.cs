@@ -21,6 +21,14 @@ namespace WalletClient.Shared
         private int id = 0;
         private const string UserAgent = "WalletClient/.NET 0.1";
 
+        protected BaseClient()
+        {
+            //If you are using a self-signed certificate on the bitcoind server, retain the line below, otherwise you'll generate an exception as the certificate cannot be truested.
+            //If you are using a purchased or trusted certificate, you can comment out this line.
+            ServicePointManager.ServerCertificateValidationCallback +=
+                (s, cert, chain, sslPolicyErrors) => true;
+        }
+
         protected string MakeRequest(string jsonRequest)
         {
             HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(Uri);
