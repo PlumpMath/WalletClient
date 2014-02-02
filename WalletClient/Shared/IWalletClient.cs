@@ -84,5 +84,11 @@ namespace WalletClient.Shared
         Task<IEnumerable<WalletTransaction>> ListTransactionsAsync(string account, int count, int startingIndex);
         bool Move(string fromAddress, string toAddress, decimal amount, int minConfirmations, string comment);
         Task<bool> MoveAsync(string fromAddress, string toAddress, decimal amount, int minConfirmations, string comment);
+
+        void RefillKeyPool();
+        Task RefillKeyPoolAsync();
+
+        void ImportPrivateKey(string privateKey, string label, bool rescanTransactions);
+        Task ImportPrivateKeyAsync(string privateKey, string label, bool rescanTransactions);
     }
 }

@@ -502,5 +502,29 @@ namespace WalletClient.Shared
             WalletRequest walletRequest = new WalletRequest("getaddressesbyaccount", new List<object>() { account });
             return await RpcRequestAsync<IEnumerable<string>>(walletRequest);
         }
+
+        public void RefillKeyPool()
+        {
+            WalletRequest walletRequest = new WalletRequest("keypoolrefill");
+            RpcRequest<object>(walletRequest);
+        }
+
+        async public Task RefillKeyPoolAsync()
+        {
+            WalletRequest walletRequest = new WalletRequest("keypoolrefill");
+            await RpcRequestAsync<object>(walletRequest);
+        }
+
+        public void ImportPrivateKey(string privateKey, string label = "", bool rescanTransactions = true)
+        {
+            WalletRequest walletRequest = new WalletRequest("importprivkey ", new List<object>() { privateKey, label, rescanTransactions });
+            RpcRequest<object>(walletRequest); 
+        }
+
+        async public Task ImportPrivateKeyAsync(string privateKey, string label = "", bool rescanTransactions = true)
+        {
+            WalletRequest walletRequest = new WalletRequest("importprivkey ", new List<object>() { privateKey, label, rescanTransactions });
+            await RpcRequestAsync<object>(walletRequest); 
+        }
     }
 }
