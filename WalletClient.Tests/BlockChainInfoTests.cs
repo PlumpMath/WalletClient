@@ -9,9 +9,9 @@ namespace WalletClient.Tests
     public class BlockChainInfoTests
     {
 
-        private const string UserName = "name";
+        private const string UserName = "user";
         private const string Password = "pass";
-        private const string Url = "https://rpc.blockchain.info:443";
+        private const string Url = "http://127.0.0.1:18332";
 
         private Uri uri;
         private NetworkCredential credential;

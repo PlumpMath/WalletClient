@@ -314,6 +314,21 @@ namespace WalletClient.Shared
             return await RpcRequestAsync<string>(walletRequest);
         }
 
+        public string SendFrom(string fromAccount, string toAddress, decimal amount, int minConfirmations = 1, string comment = "", string toComment = "")
+        {
+            WalletRequest walletRequest = new WalletRequest("sendfrom",
+                                                           new object[] { fromAccount, toAddress, Math.Round(amount, 8), minConfirmations, comment, toComment });
+            return RpcRequest<string>(walletRequest); 
+        }
+        
+
+        async public Task<string> SendFromAsync(string fromAccount, string toAddress, decimal amount, int minConfirmations = 1, string comment = "", string toComment = "")
+        {
+            WalletRequest walletRequest = new WalletRequest("sendfrom",
+                                                           new object[] { fromAccount, toAddress, Math.Round(amount, 8), minConfirmations, comment, toComment });
+            return await RpcRequestAsync<string>(walletRequest);
+        }
+
         public string SendMany(string fromAccount, IDictionary<string, decimal> toAccounts, int minConfirmations = 1, string comment = "")
         {
 
@@ -341,8 +356,10 @@ namespace WalletClient.Shared
             {
                 JContainer container = (JContainer)accountObj;
                 accounts = new List<AccountInfo>();
-                foreach (JProperty child in container.Children())
+                foreach (JToken token in container.Children())
                 {
+                    if (!(token is JProperty)) continue;
+                    JProperty child = (JProperty) token;
                     AccountInfo account = new AccountInfo();
                     account.Name = child.Name;
                     account.Balance = child.Value.ToObject<decimal>();
@@ -363,8 +380,10 @@ namespace WalletClient.Shared
             {
                 JContainer container = (JContainer)accountObj;
                 accounts = new List<AccountInfo>();
-                foreach (JProperty child in container.Children())
+                foreach (JToken token in container.Children())
                 {
+                    if (!(token is JProperty)) continue;
+                    JProperty child = (JProperty)token;
                     AccountInfo account = new AccountInfo();
                     account.Name = child.Name;
                     account.Balance = child.Value.ToObject<decimal>();

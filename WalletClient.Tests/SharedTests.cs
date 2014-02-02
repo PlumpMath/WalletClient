@@ -14,9 +14,7 @@ namespace WalletClient.Tests
     {
         private const string UserName = "user";
         private const string Password = "pass";
-
-        private const string Url = "https://rpc.blockchain.info:443";
-        //private const string Url = "http://127.0.0.1:18332";
+        private const string Url = "http://127.0.0.1:18332";
 
         private Uri uri;
         private NetworkCredential credential;
@@ -62,7 +60,8 @@ namespace WalletClient.Tests
             Transaction transaction = null;
             try
             {
-                transaction = client.GetTransaction("13dffdaef097881acfe9bdb5e6338192242d80161ffec264ee61cf23bc9a1164");
+                //e25bef0de288d5154ba681ecdd4c88624f1fb0ad59627eaa11c19dcc5e81ef19
+                transaction = client.GetTransaction("7ecfec038049deffca37700d4754ebb1fc41cace1b6457dd64f1919a8944032a");
             }
             catch (BitcoinRpcException ex)
             {
@@ -76,9 +75,9 @@ namespace WalletClient.Tests
         [TestMethod]
         public void CanSetTransactionFee()
         {
-            client.SetTransactionFee(0.0002m);
+            client.SetTransactionFee(0.0001m);
             var info = client.GetWalletInfo();
-            Assert.AreEqual(0.0002, info.Fee);
+            Assert.AreEqual(0.0001, info.Fee);
         }
 
         [TestMethod]
@@ -87,6 +86,21 @@ namespace WalletClient.Tests
             string account = client.GetAccount("myPMSUyNVxouBXU6vxivb3yr145NkxrGNu");
             Assert.IsNotNull(account);
         }
+
+        [TestMethod]
+        public void CanGetAddressForAccount()
+        {
+            string account = client.GetAccountAddress("");
+            Assert.IsNotNull(account);
+        }
+
+        [TestMethod]
+        public void CanGetAddressesForAccount()
+        {
+            var accounts = client.GetAddressesByAccount("");
+            Assert.IsTrue(accounts.Any());
+        }
+
 
         [TestMethod]
         public void CanGetAccountBalance()
@@ -105,7 +119,7 @@ namespace WalletClient.Tests
         [TestMethod]
         public void CanListAccounts()
         {
-            var accounts = client.ListAccounts(0);
+            var accounts = client.ListAccounts();
             Assert.IsNotNull(accounts, "Accounts was null");
             Assert.IsTrue(accounts.Any(), "Accounts returned no items");
         }
@@ -231,9 +245,9 @@ namespace WalletClient.Tests
         [TestMethod]
         public void CanListUnspent()
         {
-            var result = client.ListUnspentTransactions();
+            var result = client.ListUnspentTransactions(0, 5);
             Assert.IsNotNull(result);
         }
-
+        
     }
 }

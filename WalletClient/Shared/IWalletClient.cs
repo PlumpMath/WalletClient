@@ -24,9 +24,33 @@ namespace WalletClient.Shared
         Task SetTransactionFeeAsync(decimal amount);
         string GetAccount(string address);
         Task<string> GetAccountAsync(string address);
+
+        /// <summary>
+        /// Returns the list of all Bitcoin addresses associated with and account
+        /// </summary>
+        /// <param name="account">The account to query</param>
+        /// <returns>A list of valid addresses</returns>
         IEnumerable<string> GetAddressesByAccount(string account);
+
+        /// <summary>
+        /// Returns the list of all Bitcoin addresses associated with and account
+        /// </summary>
+        /// <param name="account">The account to query</param>
+        /// <returns>A list of valid addresses</returns>
         Task<IEnumerable<string>> GetAddressesByAccountAsync(string account);
+
+        /// <summary>
+        /// Gets the current default address for an accouunt
+        /// </summary>
+        /// <param name="account">The account to query</param>
+        /// <returns>A Bitcoin address</returns>
         string GetAccountAddress(string account);
+
+        /// <summary>
+        /// Gets the current default address for an accouunt
+        /// </summary>
+        /// <param name="account">The account to query</param>
+        /// <returns>A Bitcoin address</returns>
         Task<string> GetAccountAddressAsync(string account);
         decimal GetBalance(string account, int minConfirmations);
         Task<decimal> GetBalanceAsync(string account, int minConfirmations);
@@ -38,6 +62,8 @@ namespace WalletClient.Shared
         Task<Int32> GetBlockCountAsync();
         int GetConnectionCount();
         Task<Int32> GetConnectionCountAsync();
+        string SendFrom(string fromAccount, string toAddress, decimal amount, int minConfirmations, string comment, string toComment);
+        Task<string> SendFromAsync(string fromAccount, string toAddress, decimal amount, int minConfirmations, string comment, string toComment);
         string SendToAddress(string toAddress, decimal amount, string comment, string toComment);
         Task<string> SendToAddressAsync(string toAddress, decimal amount, string comment, string toComment);
         string SendMany(string fromAccount, IDictionary<string, decimal> toAccounts, int minConfirmations, string comment);

@@ -9,7 +9,7 @@ namespace WalletClient.Tests
     [TestClass]
     public class BitcoinDTests
     {
-        private const string UserName = "name";
+        private const string UserName = "user";
         private const string Password = "pass";
         private const string Url = "http://127.0.0.1:18332";
 
